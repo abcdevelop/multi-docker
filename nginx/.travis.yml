@@ -1,0 +1,44 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t abcdevelop/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  #- docker run abcdevelop/react-test yarn test --coverage
+  - docker run -e CI=true abcdevelop/react-test yarn test
+
+after_success:
+  - docker build -t abcdevelop/multi-client ./client
+  - docker build -t abcdevelop/multi-nginx ./nginx
+  - docker build -t abcdevelop/multi-server ./server
+  - docker build -t abcdevelop/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push abcdevelop/multi-client
+  - docker push abcdevelop/multi-nginx
+  - docker push abcdevelop/multi-server
+  - docker push abcdevelop/multi-worker
+
+
+#deploy:
+#  provider: elasticbeanstalk
+#  region: "us-east-1"
+#  app: "react-test"
+#  env: "DockerReact-env"
+#  bucket_name: "elasticbeanstalk-us-east-1-169521840923"
+#  bucket_path: "react-test"
+#  on:
+#    branch: master
+#access_key_id: "$AWS_ACCESS_KEY"
+#secret_access_key: 
+#  secure: "$AWS_SECRET_KEY"
+#access_key_id: 
+#  secure: $AWS_ACCESS_KEY
+#secret_access_key:
+#  secure: $AWS_SECRET_KEY
+#access_key_id: 
+  #secure: $AWS_ACCESS_KEY
