@@ -4,25 +4,26 @@ services:
   - docker
 
 before_install:
-  - docker build -t abcdevelop/react-test -f ./client/Dockerfile.dev ./client/.
+  - docker build -t $DOCKER_ID/react-test -f ./client/Dockerfile.dev ./client/.
 
 script:
   #- docker run abcdevelop/react-test yarn test --coverage
-  - docker run -e CI=true abcdevelop/react-test yarn test
+  - docker run -e CI=true $DOCKER_ID/react-test yarn test
 
 after_success:
-  - docker build -t abcdevelop/multi-client ./client
-  - docker build -t abcdevelop/multi-nginx ./nginx
-  - docker build -t abcdevelop/multi-server ./server
-  - docker build -t abcdevelop/multi-worker ./worker
+  - docker build -t $DOCKER_ID/multi-nginx ./nginx
+  - docker build -t $DOCKER_ID/multi-server ./server
+  - docker build -t $DOCKER_ID/multi-worker ./worker
+  - docker build -t $DOCKER_ID/multi-client ./client
   # Log in to the docker CLI
   #- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  - echo $DOCKER_PASSWORD | docker login -u abcdevelop --password-stdin
+  #- echo $DOCKER_PASSWORD | docker login -u abcdevelop --password-stdin
+  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_ID --password-stdin
   # Take those images and push them to docker hub
-  - docker push abcdevelop/multi-client
-  - docker push abcdevelop/multi-nginx
-  - docker push abcdevelop/multi-server
-  - docker push abcdevelop/multi-worker
+  - docker push $DOCKER_ID/multi-nginx
+  - docker push $DOCKER_ID/multi-server
+  - docker push $DOCKER_ID/multi-worker
+  - docker push $DOCKER_ID/multi-client
 
 
 #deploy:
