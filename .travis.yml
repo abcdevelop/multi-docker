@@ -16,7 +16,8 @@ after_success:
   - docker build -t abcdevelop/multi-server ./server
   - docker build -t abcdevelop/multi-worker ./worker
   # Log in to the docker CLI
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  #- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - echo $DOCKER_PASSWORD | docker login -u abcdevelop --password-stdin
   # Take those images and push them to docker hub
   - docker push abcdevelop/multi-client
   - docker push abcdevelop/multi-nginx
